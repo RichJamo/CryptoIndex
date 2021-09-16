@@ -179,6 +179,16 @@ contract SushiIndex {
         updateSharesOnWithdrawal(user);
     }
 
+    function executeThreeSwaps(
+        address _from1, address _to1, uint256 _amount1,
+        address _from2, address _to2, uint256 _amount2,
+        address _from3, address _to3, uint256 _amount3
+        ) public {
+            executeRebalancingSwap(_from1, _to1, _amount1);
+            executeRebalancingSwap(_from2, _to2, _amount2);
+            executeRebalancingSwap(_from3, _to3, _amount3);
+    }
+
     function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) public {
         approve_spending(_tokenToSwap, SUSHISWAP_ROUTER, _amountToBeSwapped);
         if (_tokenToSwap == WONE_ADDRESS || _tokenSwappingTo == WONE_ADDRESS) {

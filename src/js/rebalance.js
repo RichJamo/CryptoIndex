@@ -84,24 +84,28 @@ async function startApp(provider) {
 }
 
 async function balanceAndRemoveOneCoin(array_coins) {
+  var swapCounter = 0;
+  var token_to_be_swapped_address = [];
+  var token_swapping_to_address = [];
+  var amount_to_be_swapped = [];
 
-  var swapInputs = getSwapInputs(array_coins);
-  var token_to_be_swapped_address = swapInputs[2][0];
-  var token_swapping_to_address = swapInputs[2][1];
-  var amount_to_be_swapped = swapInputs[0];
+  do {
+    var swapInputs = getSwapInputs(array_coins);
+    token_to_be_swapped_address[swapCounter] = swapInputs[2][0];
+    token_swapping_to_address[swapCounter] = swapInputs[2][1];
+    amount_to_be_swapped[swapCounter] = swapInputs[0];
 
-  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address, token_swapping_to_address, amount_to_be_swapped)
+    updateArray(array_coins);
+    swapCounter++;
+  } while (array_coins.length > 1)
 
-  executeNextSwapOnceLastOneConfirms(array_coins);
-}
+  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0])
+  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1])
+  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2])
 
-async function executeNextSwapOnceLastOneConfirms(_array_coins) {
-  if (window.confirm("Swap Completed? Ready for next one?")) {
-    updateArray(_array_coins);
-    if (_array_coins.length > 1) {
-      await balanceAndRemoveOneCoin(_array_coins);
-    }  
-  }
+  // await dappContract_signer.executeThreeSwaps(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0],
+  //   token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1],
+  //   token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2]);
 }
 
 function sortCoinsDescendingByDiffFromAvg(_array_coins) {
