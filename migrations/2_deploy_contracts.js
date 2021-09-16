@@ -1,5 +1,6 @@
-var bentoboxDapp = artifacts.require("./bentoboxDapp.sol");
+var SushiIndex = artifacts.require("./sushiIndex.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(bentoboxDapp);
+  
+  deployer.deploy(SushiIndex);
 };

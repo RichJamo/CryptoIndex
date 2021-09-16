@@ -35,27 +35,27 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"contract IERC20[]\",\"name\":\"tokens\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"fees\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"onBatchFlashLoan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IBatchFlashBorrower.sol\":\"IBatchFlashBorrower\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IBatchFlashBorrower.sol\":{\"keccak256\":\"0x0e11cca885561e2c63072ff8c17d9520bb6fa511e697da2e3a531857783d7ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6611f2816bc4ae9557b2a3b38c8fc39dc6c7dc23399d41f1d9dae4c7d82a00a8\",\"dweb:/ipfs/QmVbKJUPqX6cwTtnksSmuNXzvUqtPM2zkhZNbce8pwpqpH\"]},\"/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IERC20.sol\":{\"keccak256\":\"0x71694c9db43e3c0898f1d72616b0b010aa46cf918ed71f989e48f7f6b0354273\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cf043f7f447c62ed1a1e9b8b31357c32cc5a0637593f3f96ed9ed33a91b17744\",\"dweb:/ipfs/QmYbAF4VK6KkzNUQjH4svqbNRHuZ8yxSE7px6jouSKp5gx\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"contract IERC20[]\",\"name\":\"tokens\",\"type\":\"address[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"fees\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"onBatchFlashLoan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IBatchFlashBorrower.sol\":\"IBatchFlashBorrower\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IBatchFlashBorrower.sol\":{\"keccak256\":\"0x0e11cca885561e2c63072ff8c17d9520bb6fa511e697da2e3a531857783d7ef7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6611f2816bc4ae9557b2a3b38c8fc39dc6c7dc23399d41f1d9dae4c7d82a00a8\",\"dweb:/ipfs/QmVbKJUPqX6cwTtnksSmuNXzvUqtPM2zkhZNbce8pwpqpH\"]},\"/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IERC20.sol\":{\"keccak256\":\"0x71694c9db43e3c0898f1d72616b0b010aa46cf918ed71f989e48f7f6b0354273\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cf043f7f447c62ed1a1e9b8b31357c32cc5a0637593f3f96ed9ed33a91b17744\",\"dweb:/ipfs/QmYbAF4VK6KkzNUQjH4svqbNRHuZ8yxSE7px6jouSKp5gx\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "immutableReferences": {},
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.6.12;\nimport \"./IERC20.sol\";\n\ninterface IBatchFlashBorrower {\n    function onBatchFlashLoan(\n        address sender,\n        IERC20[] calldata tokens,\n        uint256[] calldata amounts,\n        uint256[] calldata fees,\n        bytes calldata data\n    ) external;\n}",
-  "sourcePath": "/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IBatchFlashBorrower.sol",
+  "sourcePath": "/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IBatchFlashBorrower.sol",
   "ast": {
-    "absolutePath": "/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IBatchFlashBorrower.sol",
+    "absolutePath": "/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IBatchFlashBorrower.sol",
     "exportedSymbols": {
       "IBatchFlashBorrower": [
-        945
+        3585
       ]
     },
-    "id": 946,
+    "id": 3586,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 927,
+        "id": 3567,
         "literals": [
           "solidity",
           "^",
@@ -63,16 +63,16 @@
           ".12"
         ],
         "nodeType": "PragmaDirective",
-        "src": "32:24:4"
+        "src": "32:24:13"
       },
       {
-        "absolutePath": "/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IERC20.sol",
+        "absolutePath": "/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IERC20.sol",
         "file": "./IERC20.sol",
-        "id": 928,
+        "id": 3568,
         "nodeType": "ImportDirective",
-        "scope": 946,
-        "sourceUnit": 1434,
-        "src": "57:22:4",
+        "scope": 3586,
+        "sourceUnit": 4074,
+        "src": "57:22:13",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -83,9 +83,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 945,
+        "id": 3585,
         "linearizedBaseContracts": [
-          945
+          3585
         ],
         "name": "IBatchFlashBorrower",
         "nodeType": "ContractDefinition",
@@ -94,7 +94,7 @@
             "body": null,
             "documentation": null,
             "functionSelector": "d9d17623",
-            "id": 944,
+            "id": 3584,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
@@ -102,18 +102,18 @@
             "nodeType": "FunctionDefinition",
             "overrides": null,
             "parameters": {
-              "id": 942,
+              "id": 3582,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 930,
+                  "id": 3570,
                   "mutability": "mutable",
                   "name": "sender",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 944,
-                  "src": "152:14:4",
+                  "scope": 3584,
+                  "src": "152:14:13",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -121,10 +121,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 929,
+                    "id": 3569,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "152:7:4",
+                    "src": "152:7:13",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -136,38 +136,38 @@
                 },
                 {
                   "constant": false,
-                  "id": 933,
+                  "id": 3573,
                   "mutability": "mutable",
                   "name": "tokens",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 944,
-                  "src": "176:24:4",
+                  "scope": 3584,
+                  "src": "176:24:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_contract$_IERC20_$1433_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_contract$_IERC20_$4073_$dyn_calldata_ptr",
                     "typeString": "contract IERC20[]"
                   },
                   "typeName": {
                     "baseType": {
                       "contractScope": null,
-                      "id": 931,
+                      "id": 3571,
                       "name": "IERC20",
                       "nodeType": "UserDefinedTypeName",
-                      "referencedDeclaration": 1433,
-                      "src": "176:6:4",
+                      "referencedDeclaration": 4073,
+                      "src": "176:6:13",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_IERC20_$1433",
+                        "typeIdentifier": "t_contract$_IERC20_$4073",
                         "typeString": "contract IERC20"
                       }
                     },
-                    "id": 932,
+                    "id": 3572,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "176:8:4",
+                    "src": "176:8:13",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_contract$_IERC20_$1433_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_contract$_IERC20_$4073_$dyn_storage_ptr",
                       "typeString": "contract IERC20[]"
                     }
                   },
@@ -176,13 +176,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 936,
+                  "id": 3576,
                   "mutability": "mutable",
                   "name": "amounts",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 944,
-                  "src": "210:26:4",
+                  "scope": 3584,
+                  "src": "210:26:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -191,19 +191,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 934,
+                      "id": 3574,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "210:7:4",
+                      "src": "210:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 935,
+                    "id": 3575,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "210:9:4",
+                    "src": "210:9:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -214,13 +214,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 939,
+                  "id": 3579,
                   "mutability": "mutable",
                   "name": "fees",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 944,
-                  "src": "246:23:4",
+                  "scope": 3584,
+                  "src": "246:23:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -229,19 +229,19 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 937,
+                      "id": 3577,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
-                      "src": "246:7:4",
+                      "src": "246:7:13",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "id": 938,
+                    "id": 3578,
                     "length": null,
                     "nodeType": "ArrayTypeName",
-                    "src": "246:9:4",
+                    "src": "246:9:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
                       "typeString": "uint256[]"
@@ -252,13 +252,13 @@
                 },
                 {
                   "constant": false,
-                  "id": 941,
+                  "id": 3581,
                   "mutability": "mutable",
                   "name": "data",
                   "nodeType": "VariableDeclaration",
                   "overrides": null,
-                  "scope": 944,
-                  "src": "279:19:4",
+                  "scope": 3584,
+                  "src": "279:19:13",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
@@ -266,10 +266,10 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 940,
+                    "id": 3580,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "279:5:4",
+                    "src": "279:5:13",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -279,33 +279,33 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "142:162:4"
+              "src": "142:162:13"
             },
             "returnParameters": {
-              "id": 943,
+              "id": 3583,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "313:0:4"
+              "src": "313:0:13"
             },
-            "scope": 945,
-            "src": "117:197:4",
+            "scope": 3585,
+            "src": "117:197:13",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
           }
         ],
-        "scope": 946,
-        "src": "81:235:4"
+        "scope": 3586,
+        "src": "81:235:13"
       }
     ],
-    "src": "32:284:4"
+    "src": "32:284:13"
   },
   "legacyAST": {
     "attributes": {
-      "absolutePath": "/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IBatchFlashBorrower.sol",
+      "absolutePath": "/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IBatchFlashBorrower.sol",
       "exportedSymbols": {
         "IBatchFlashBorrower": [
-          945
+          3585
         ]
       },
       "license": "MIT"
@@ -320,24 +320,24 @@
             ".12"
           ]
         },
-        "id": 927,
+        "id": 3567,
         "name": "PragmaDirective",
-        "src": "32:24:4"
+        "src": "32:24:13"
       },
       {
         "attributes": {
-          "SourceUnit": 1434,
-          "absolutePath": "/Users/richardjamieson/Documents/GitHub/BentoBoxBalancer/contracts/interfaces/IERC20.sol",
+          "SourceUnit": 4074,
+          "absolutePath": "/Users/richardjamieson/Documents/GitHub/SushiIndexHarmony/contracts/interfaces/IERC20.sol",
           "file": "./IERC20.sol",
-          "scope": 946,
+          "scope": 3586,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 928,
+        "id": 3568,
         "name": "ImportDirective",
-        "src": "57:22:4"
+        "src": "57:22:13"
       },
       {
         "attributes": {
@@ -352,10 +352,10 @@
           "documentation": null,
           "fullyImplemented": false,
           "linearizedBaseContracts": [
-            945
+            3585
           ],
           "name": "IBatchFlashBorrower",
-          "scope": 946
+          "scope": 3586
         },
         "children": [
           {
@@ -371,7 +371,7 @@
               ],
               "name": "onBatchFlashLoan",
               "overrides": null,
-              "scope": 945,
+              "scope": 3585,
               "stateMutability": "nonpayable",
               "virtual": false,
               "visibility": "external"
@@ -385,7 +385,7 @@
                       "mutability": "mutable",
                       "name": "sender",
                       "overrides": null,
-                      "scope": 944,
+                      "scope": 3584,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -399,14 +399,14 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 929,
+                        "id": 3569,
                         "name": "ElementaryTypeName",
-                        "src": "152:7:4"
+                        "src": "152:7:13"
                       }
                     ],
-                    "id": 930,
+                    "id": 3570,
                     "name": "VariableDeclaration",
-                    "src": "152:14:4"
+                    "src": "152:14:13"
                   },
                   {
                     "attributes": {
@@ -414,7 +414,7 @@
                       "mutability": "mutable",
                       "name": "tokens",
                       "overrides": null,
-                      "scope": 944,
+                      "scope": 3584,
                       "stateVariable": false,
                       "storageLocation": "calldata",
                       "type": "contract IERC20[]",
@@ -432,22 +432,22 @@
                             "attributes": {
                               "contractScope": null,
                               "name": "IERC20",
-                              "referencedDeclaration": 1433,
+                              "referencedDeclaration": 4073,
                               "type": "contract IERC20"
                             },
-                            "id": 931,
+                            "id": 3571,
                             "name": "UserDefinedTypeName",
-                            "src": "176:6:4"
+                            "src": "176:6:13"
                           }
                         ],
-                        "id": 932,
+                        "id": 3572,
                         "name": "ArrayTypeName",
-                        "src": "176:8:4"
+                        "src": "176:8:13"
                       }
                     ],
-                    "id": 933,
+                    "id": 3573,
                     "name": "VariableDeclaration",
-                    "src": "176:24:4"
+                    "src": "176:24:13"
                   },
                   {
                     "attributes": {
@@ -455,7 +455,7 @@
                       "mutability": "mutable",
                       "name": "amounts",
                       "overrides": null,
-                      "scope": 944,
+                      "scope": 3584,
                       "stateVariable": false,
                       "storageLocation": "calldata",
                       "type": "uint256[]",
@@ -474,19 +474,19 @@
                               "name": "uint256",
                               "type": "uint256"
                             },
-                            "id": 934,
+                            "id": 3574,
                             "name": "ElementaryTypeName",
-                            "src": "210:7:4"
+                            "src": "210:7:13"
                           }
                         ],
-                        "id": 935,
+                        "id": 3575,
                         "name": "ArrayTypeName",
-                        "src": "210:9:4"
+                        "src": "210:9:13"
                       }
                     ],
-                    "id": 936,
+                    "id": 3576,
                     "name": "VariableDeclaration",
-                    "src": "210:26:4"
+                    "src": "210:26:13"
                   },
                   {
                     "attributes": {
@@ -494,7 +494,7 @@
                       "mutability": "mutable",
                       "name": "fees",
                       "overrides": null,
-                      "scope": 944,
+                      "scope": 3584,
                       "stateVariable": false,
                       "storageLocation": "calldata",
                       "type": "uint256[]",
@@ -513,19 +513,19 @@
                               "name": "uint256",
                               "type": "uint256"
                             },
-                            "id": 937,
+                            "id": 3577,
                             "name": "ElementaryTypeName",
-                            "src": "246:7:4"
+                            "src": "246:7:13"
                           }
                         ],
-                        "id": 938,
+                        "id": 3578,
                         "name": "ArrayTypeName",
-                        "src": "246:9:4"
+                        "src": "246:9:13"
                       }
                     ],
-                    "id": 939,
+                    "id": 3579,
                     "name": "VariableDeclaration",
-                    "src": "246:23:4"
+                    "src": "246:23:13"
                   },
                   {
                     "attributes": {
@@ -533,7 +533,7 @@
                       "mutability": "mutable",
                       "name": "data",
                       "overrides": null,
-                      "scope": 944,
+                      "scope": 3584,
                       "stateVariable": false,
                       "storageLocation": "calldata",
                       "type": "bytes",
@@ -546,19 +546,19 @@
                           "name": "bytes",
                           "type": "bytes"
                         },
-                        "id": 940,
+                        "id": 3580,
                         "name": "ElementaryTypeName",
-                        "src": "279:5:4"
+                        "src": "279:5:13"
                       }
                     ],
-                    "id": 941,
+                    "id": 3581,
                     "name": "VariableDeclaration",
-                    "src": "279:19:4"
+                    "src": "279:19:13"
                   }
                 ],
-                "id": 942,
+                "id": 3582,
                 "name": "ParameterList",
-                "src": "142:162:4"
+                "src": "142:162:13"
               },
               {
                 "attributes": {
@@ -567,24 +567,24 @@
                   ]
                 },
                 "children": [],
-                "id": 943,
+                "id": 3583,
                 "name": "ParameterList",
-                "src": "313:0:4"
+                "src": "313:0:13"
               }
             ],
-            "id": 944,
+            "id": 3584,
             "name": "FunctionDefinition",
-            "src": "117:197:4"
+            "src": "117:197:13"
           }
         ],
-        "id": 945,
+        "id": 3585,
         "name": "ContractDefinition",
-        "src": "81:235:4"
+        "src": "81:235:13"
       }
     ],
-    "id": 946,
+    "id": 3586,
     "name": "SourceUnit",
-    "src": "32:284:4"
+    "src": "32:284:13"
   },
   "compiler": {
     "name": "solc",
@@ -592,7 +592,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-08-12T13:51:31.677Z",
+  "updatedAt": "2021-09-13T13:29:05.917Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},

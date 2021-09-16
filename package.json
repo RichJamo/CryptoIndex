@@ -24,11 +24,14 @@
   },
   "dependencies": {
     "@chainlink/contracts": "^0.2.1",
+    "@harmony-js/core": "^0.1.57",
     "@metamask/onboarding": "^1.0.1",
     "@openzeppelin/contracts": "^3.4.0",
     "coingecko-api": "^1.0.10",
     "dotenv": "^10.0.0",
     "ethers": "^5.3.1",
-    "gh-pages": "^3.2.3"
+    "gh-pages": "^3.2.3",
+    "solc": "^0.8.7-fixed",
+    "tslib": "^2.3.1"
   }
 }
