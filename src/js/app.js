@@ -1,19 +1,19 @@
 const DAPP_ADDRESS = "0xC0dB91699c3599ACDd39E28125BCAa380154Ecb7"; //insert the address I deployed to
 
-const USDC_ADDRESS = "0x985458E523dB3d53125813eD68c274899e9DfAb4" //one1np293efrmv74xyjcz0kk3sn53x0fm745f2hsuc
+const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
 
-const WONE_ADDRESS = "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a" //one1eanyppa9hvpr0g966e6zs5hvdjxkngn6jtulua
-const SUSHI_ADDRESS = "0xBEC775Cb42AbFa4288dE81F387a9b1A3c4Bc552A" //one1hmrhtj6z40ay9zx7s8ec02d350ztc4f2gfax0c
-const WETH_ADDRESS = "0x6983D1E6DEf3690C4d616b13597A09e6193EA013" //one1dxparek77d5scntpdvf4j7sfucvnagqnhhfaun
-const WBTC_ADDRESS = "0x3095c7557bCb296ccc6e363DE01b760bA031F2d9" //one1xz2uw4tmev5kenrwxc77qxmkpwsrrukel9ucc5
+const WMATIC_ADDRESS = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+const SUSHI_ADDRESS = "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a"
+const WETH_ADDRESS = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
+const WBTC_ADDRESS = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
 
-const ONE_USD_ORACLE = "0xcEe686F89bc0dABAd95AEAAC980aE1d97A075FAD" //one1emngd7ymcrdt4k26a2kfszhpm9aqwhadx06kmr
-const SUSHI_USD_ORACLE = "0x90142a6930ecF80F1d14943224C56CFe0CD0d347" //one1jq2z56fsanuq78g5jsezf3tvlcxdp568yjcafg
-const ETH_USD_ORACLE = "0x4f11696cE92D78165E1F8A9a4192444087a45b64" //one1fugkjm8f94upvhsl32dyryjygzr6gkmyz9zrk6
-const WBTC_USD_ORACLE = "0xEF637736B220a58C661bfF4b71e03ca898DCC0Bd" //one1aa3hwd4jyzjccesmla9hrcpu4zvdes9az7kqfn
+const MATIC_USD_ORACLE = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"
+const SUSHI_USD_ORACLE = "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0"
+const ETH_USD_ORACLE = "0xF9680D99D6C9589e2a93a78A04A279e509205945"
+const BTC_USD_ORACLE = "0xc907E116054Ad103354f2D350FD2514433D57F6f"
 
-const SUSHISWAP_ROUTER = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506" //one1rvpd4r9s6zt7hr2h596m3rra3drejagxen2var
-
+const QUICKSWAP_ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
+const SUSHISWAP_ROUTER = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
 
 var user;
 
@@ -27,14 +27,14 @@ const dappContract_provider = new ethers.Contract(DAPP_ADDRESS, sushi_index_abi,
 /* Detect the MetaMask Ethereum provider */
 /*****************************************/
 
-//check that we are connected to Harmony network
+//check that we are connected to Polygon network
 var chainId = await checkNetworkId(provider)
-if (chainId !== 1666600000) {
-  console.log("Please change to Harmony network") //TODO make this an alert to the user...
+if (chainId !== 137) {
+  console.log("Please change to Polygon network") //TODO make this an alert to the user...
   try {
     await ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x63564C40' }], //1666600000 in 0x padded hexadecimal form is 0x63564C40
+      params: [{ chainId: '0x89' }], //137 in 0x padded hexadecimal form is 0x89
     });
     window.location.reload();
   } catch (switchError) {
@@ -43,7 +43,7 @@ if (chainId !== 1666600000) {
       try {
         await ethereum.request({
           method: 'wallet_addEthereumChain',
-          params: [{ chainId: '0x63564C40', rpcUrl: 'https://api.s0.t.hmny.io' /* ... */ }],
+          params: [{ chainId: '0x89', rpcUrl: 'https://rpc-mainnet.maticvigil.com/' /* ... */ }],
         });
       } catch (addError) {
         // handle "add" error
@@ -91,7 +91,7 @@ async function startApp(provider) {
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     console.log(`Depositing ${depositAmountUSDC} of USDC to the SushiIndex account`);
     $("#swapStarted").css("display", "block");
-    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC to the Harmony Index account`);
+    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC to the Polygon Index account`);
     var array_coins = await getTokenInfo(DAPP_ADDRESS);
     var WMATIC_balanceInUSD = array_coins[0].usd_balance;
     console.log(WMATIC_balanceInUSD);
@@ -114,68 +114,18 @@ async function startApp(provider) {
         parseInt(WBTC_balanceInUSD * 10 ** 6))
       //{ gasLimit: parseInt(estimatedGasLimit * 1.2) });
     } else {
-      // dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, USDC_ADDRESS, user);
       dappContract_signer.depositFirstTime (depositAmountUSDC * 10 ** 6, USDC_ADDRESS, user);
-      // var tokenContract = new ethers.Contract(USDC_ADDRESS, token_abi, signer);
-      // try {
-      //   console.log(depositAmountUSDC * 10 ** 6);
-      //   await tokenContract.transfer(
-      //     DAPP_ADDRESS,
-      //     depositAmountUSDC * 10 ** 6
-      //   );//need to catch an error here - perhaps make this it's own function!
-      // } catch (error) {
-      //   console.log(error)
-      // }
-      //dappContract_signer.deposit(depositAmountUSDC * 10 ** 6, USDC_ADDRESS, user);
-      // dappContract_signer.approve_spending(USDC_ADDRESS, SUSHISWAP_ROUTER, depositAmountUSDC * 10 ** 6);
-      // dappContract_signer.swapIntoFourEqualParts(depositAmountUSDC * 10 ** 6);
-      // dappContract_signer.swap(250000, 0, [USDC_ADDRESS, WONE_ADDRESS], user, 11111111111);
-      // dappContract_signer.swap(250000, 0, [USDC_ADDRESS, SUSHI_ADDRESS], user, 11111111111);
-      // dappContract_signer.swap(250000, 0, [USDC_ADDRESS, WETH_ADDRESS], user, 11111111111);
-      //dappContract_signer.swap(50000, 0, [USDC_ADDRESS, WONE_ADDRESS, WBTC_ADDRESS], user, 11111111111);
-      //dappContract_signer.setSharesFirstTime(user);
     }
   })
 
   withdrawToUserButton.addEventListener('click', async () => {
     //put in gas estimation here
     await dappContract_signer.withdrawUserFunds(user);
-    // var userShares = await dappContract_signer.getUserShares(user);
-    // var totalShares = await dappContract_signer.totalNumberOfShares();
-    // console.log(userShares);
-    // console.log(totalShares);
-
-    // var WONE_amount = userShares.mul(await dappContract_signer.balanceOf(WONE_ADDRESS, DAPP_ADDRESS)).div(totalShares);
-    // // var SUSHI_amount = userShares.mul(await dappContract_signer.balanceOf(SUSHI_ADDRESS, DAPP_ADDRESS)).div(totalShares);
-    // // var WETH_amount = userShares.mul(await dappContract_signer.balanceOf(WETH_ADDRESS, DAPP_ADDRESS)).div(totalShares);
-    // // var WBTC_amount = userShares.mul(await dappContract_signer.balanceOf(WBTC_ADDRESS, DAPP_ADDRESS)).div(totalShares);
-    // // console.log(WONE_amount);
-    // // console.log(SUSHI_amount);
-    // // console.log(WETH_amount);
-    // // console.log(WBTC_amount);
-
-    // dappContract_signer.approveSpendingWholeBalance(WONE_ADDRESS, SUSHISWAP_ROUTER);
-    // // dappContract_signer.approveSpendingWholeBalance(SUSHI_ADDRESS, SUSHISWAP_ROUTER);
-    // dappContract_signer.approveSpendingWholeBalance(WETH_ADDRESS, SUSHISWAP_ROUTER);
-    // // dappContract_signer.approveSpendingWholeBalance(WBTC_ADDRESS, SUSHISWAP_ROUTER);
-
-    // dappContract_signer.swapBackToUSDC(WONE_ADDRESS, WONE_amount);
-    // dappContract_signer.swapBackToUSDC(SUSHI_ADDRESS, SUSHI_amount);
-    // dappContract_signer.withdrawAll(user, WETH_ADDRESS);
-    // dappContract_signer.swapBackToUSDC(WBTC_ADDRESS, WBTC_amount);
-
-    // dappContract_signer.approveSpendingWholeBalance(USDC_ADDRESS, user);
-        
-    // var USDC_amount = dappContract.signer.balanceOf(USDC_ADDRESS, DAPP_ADDRESS);
-    // tokenContract = new ethers.Contract(USDC_ADDRESS, token_abi, provider);
-    // tokenContract.transferFrom(DAPP_ADDRESS, user, USDC_amount);
-
-    // dappContract_signer.updateSharesOnWithdrawal(user);
   })
 }
 
 async function displayBalances() {
-  getWONEResult.innerHTML = parseFloat(ethers.utils.formatUnits(await getBalance(WONE_ADDRESS, DAPP_ADDRESS), 18)).toFixed(6) || 'Not able to get accounts';
+  getWMATICResult.innerHTML = parseFloat(ethers.utils.formatUnits(await getBalance(WMATIC_ADDRESS, DAPP_ADDRESS), 18)).toFixed(6) || 'Not able to get accounts';
 
   getSUSHIResult.innerHTML = parseFloat(ethers.utils.formatUnits(await getBalance(SUSHI_ADDRESS, DAPP_ADDRESS), 18)).toFixed(6) || 'Not able to get accounts';
 
@@ -186,8 +136,8 @@ async function displayBalances() {
 
 async function displayUSDBalances() {
   var array_coins = await getTokenInfo(DAPP_ADDRESS);
-  var wone_usd = array_coins[0].usd_balance;
-  WONEInUsd.innerHTML = wone_usd.toFixed(2) || 'Not able to get accounts'; //8 decimals for oracle input, 18 for WONE
+  var wmatic_usd = array_coins[0].usd_balance;
+  WMATICInUsd.innerHTML = wmatic_usd.toFixed(2) || 'Not able to get accounts'; //8 decimals for oracle input, 18 for WMATIC
   var sushi_usd = array_coins[1].usd_balance;
   SUSHIInUsd.innerHTML = sushi_usd.toFixed(2) || 'Not able to get accounts';
   var wbtc_usd = array_coins[2].usd_balance;
@@ -195,7 +145,7 @@ async function displayUSDBalances() {
   var weth_usd = array_coins[3].usd_balance;
   WETHInUsd.innerHTML = weth_usd.toFixed(2) || 'Not able to get accounts';
 
-  var total_in_usd = wone_usd + sushi_usd + wbtc_usd + weth_usd;
+  var total_in_usd = wmatic_usd + sushi_usd + wbtc_usd + weth_usd;
   TotalInUSD.innerHTML = '$ ' + total_in_usd.toFixed(2);
 
   var userShares = (await dappContract_provider.getUserShares(user)).toNumber()
@@ -218,12 +168,12 @@ async function getTokenInfo(accountOrContract) {
   }
 
   //create a coin object for each of our 4 assets
-  var WONE = new Coin("WONE", WONE_ADDRESS, ONE_USD_ORACLE);
+  var WMATIC = new Coin("WMATIC", WMATIC_ADDRESS, ONE_USD_ORACLE);
   var SUSHI = new Coin("SUSHI", SUSHI_ADDRESS, SUSHI_USD_ORACLE);
   var WBTC = new Coin("WBTC", WBTC_ADDRESS, WBTC_USD_ORACLE);
   var WETH = new Coin("WETH", WETH_ADDRESS, ETH_USD_ORACLE);
 
-  var array_coins = [WONE, SUSHI, WBTC, WETH];
+  var array_coins = [WMATIC, SUSHI, WBTC, WETH];
   var total_in_usd = 0;
 
   for (let coin of array_coins) {
@@ -272,16 +222,26 @@ async function getBalance(token_address, accountOrContract) {
   }
 }
 
-async function getExchangeRate(oracle_address) {
-  const provider_testnet = new ethers.getDefaultProvider("https://api.s0.b.hmny.io");
-  const aggregatorV3InterfaceABI = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "description", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint80", "name": "_roundId", "type": "uint80" }], "name": "getRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "latestRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "version", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
-  const addr = oracle_address;
-  const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider_testnet);
+// async function getExchangeRate(oracle_address) {
+//   const provider_testnet = new ethers.getDefaultProvider("https://api.s0.b.hmny.io");
+//   const aggregatorV3InterfaceABI = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "description", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint80", "name": "_roundId", "type": "uint80" }], "name": "getRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "latestRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "version", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
+//   const addr = oracle_address;
+//   const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider_testnet);
 
+//   try {
+//     var result = await priceFeed.latestRoundData();
+//     console.log("Latest Round Data", result[1]);
+//     return result[1]; //returns in BigNumber format
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+async function getExchangeRate(oracle_address) {
+  var oracle = new ethers.Contract(oracle_address, CHAINLINK_ORACLE_ABI, provider);
   try {
-    var result = await priceFeed.latestRoundData();
-    console.log("Latest Round Data", result[1]);
-    return result[1]; //returns in BigNumber format
+    var exchangeRate = await oracle.latestAnswer();
+    return exchangeRate; //returns in BigNumber format
   } catch (error) {
     console.log(error);
   }

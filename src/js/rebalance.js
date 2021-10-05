@@ -1,18 +1,19 @@
 const DAPP_ADDRESS = "0xC0dB91699c3599ACDd39E28125BCAa380154Ecb7"; //insert the address I deployed to
 
-const USDC_ADDRESS = "0x985458e523db3d53125813ed68c274899e9dfab4" //one1np293efrmv74xyjcz0kk3sn53x0fm745f2hsuc
+const USDC_ADDRESS = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
 
-const WONE_ADDRESS = "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a" //one1eanyppa9hvpr0g966e6zs5hvdjxkngn6jtulua
-const SUSHI_ADDRESS = "0xbec775cb42abfa4288de81f387a9b1a3c4bc552a" //one1hmrhtj6z40ay9zx7s8ec02d350ztc4f2gfax0c
-const WETH_ADDRESS = "0x6983d1e6def3690c4d616b13597a09e6193ea013" //one1dxparek77d5scntpdvf4j7sfucvnagqnhhfaun
-const WBTC_ADDRESS = "0x3095c7557bcb296ccc6e363de01b760ba031f2d9" //one1xz2uw4tmev5kenrwxc77qxmkpwsrrukel9ucc5
+const WMATIC_ADDRESS = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+const SUSHI_ADDRESS = "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a"
+const WETH_ADDRESS = "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
+const WBTC_ADDRESS = "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6"
 
-const SUSHISWAP_ROUTER = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506" //one1rvpd4r9s6zt7hr2h596m3rra3drejagxen2var
+const MATIC_USD_ORACLE = "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"
+const SUSHI_USD_ORACLE = "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0"
+const ETH_USD_ORACLE = "0xF9680D99D6C9589e2a93a78A04A279e509205945"
+const BTC_USD_ORACLE = "0xc907E116054Ad103354f2D350FD2514433D57F6f"
 
-const ONE_USD_ORACLE = "0xcEe686F89bc0dABAd95AEAAC980aE1d97A075FAD" //one1emngd7ymcrdt4k26a2kfszhpm9aqwhadx06kmr
-const SUSHI_USD_ORACLE = "0x90142a6930ecF80F1d14943224C56CFe0CD0d347" //one1jq2z56fsanuq78g5jsezf3tvlcxdp568yjcafg
-const ETH_USD_ORACLE = "0x4f11696cE92D78165E1F8A9a4192444087a45b64" //one1fugkjm8f94upvhsl32dyryjygzr6gkmyz9zrk6
-const WBTC_USD_ORACLE = "0xEF637736B220a58C661bfF4b71e03ca898DCC0Bd" //one1aa3hwd4jyzjccesmla9hrcpu4zvdes9az7kqfn
+const QUICKSWAP_ROUTER = "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"
+const SUSHISWAP_ROUTER = "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"
 
 var user;
 
@@ -27,12 +28,12 @@ const dappContract_signer = new ethers.Contract(DAPP_ADDRESS, sushi_index_abi, s
 
 //check that we are connected to Polygon/Matic network
 var chainId = await checkNetworkId(provider)
-if (chainId !== 1666600000) {
-  console.log("Please change to Harmony network") //TODO make this an alert to the user...
+if (chainId !== 137) {
+  console.log("Please change to Polygon network") //TODO make this an alert to the user...
   try {
     await ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x63564C40' }], //1666600000 in 0x padded hexadecimal form is 0x63564C40
+      params: [{ chainId: '0x89' }], //137 in 0x padded hexadecimal form is 0x89
     });
     window.location.reload();
   } catch (switchError) {
@@ -41,7 +42,7 @@ if (chainId !== 1666600000) {
       try {
         await ethereum.request({
           method: 'wallet_addEthereumChain',
-          params: [{ chainId: '0x63564C40', rpcUrl: 'https://api.s0.t.hmny.io' /* ... */ }],
+          params: [{ chainId: '0x89', rpcUrl: 'https://rpc-mainnet.maticvigil.com/' /* ... */ }],
         });
       } catch (addError) {
         // handle "add" error
@@ -98,10 +99,6 @@ async function balanceAndRemoveOneCoin(array_coins) {
     updateArray(array_coins);
     swapCounter++;
   } while (array_coins.length > 1)
-
-  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0])
-  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1])
-  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2])
 
   await dappContract_signer.executeThreeSwaps(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0],
     token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1],
@@ -230,12 +227,12 @@ async function getTokenInfoViaTokenContract() {
   }
 
   //create a coin object for each of our 4 assets
-  var WONE = new Coin("WONE", WONE_ADDRESS, ONE_USD_ORACLE);
+  var WMATIC = new Coin("WMATIC", WMATIC_ADDRESS, ONE_USD_ORACLE);
   var SUSHI = new Coin("SUSHI", SUSHI_ADDRESS, SUSHI_USD_ORACLE);
   var WBTC = new Coin("WBTC", WBTC_ADDRESS, WBTC_USD_ORACLE);
   var WETH = new Coin("WETH", WETH_ADDRESS, ETH_USD_ORACLE);
 
-  var array_coins = [WONE, SUSHI, WBTC, WETH];
+  var array_coins = [WMATIC, SUSHI, WBTC, WETH];
   var total_in_usd = 0;
 
   for (let coin of array_coins) {
@@ -278,16 +275,26 @@ async function giveApprovalFromDapp(token_address, router_address, amountIn) {
   }
 }
 
-async function getExchangeRate(oracle_address) {
-  const provider_testnet = new ethers.getDefaultProvider("https://api.s0.b.hmny.io");
-  const aggregatorV3InterfaceABI = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "description", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint80", "name": "_roundId", "type": "uint80" }], "name": "getRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "latestRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "version", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
-  const addr = oracle_address;
-  const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider_testnet);
+// async function getExchangeRate(oracle_address) {
+//   const provider_testnet = new ethers.getDefaultProvider("https://api.s0.b.hmny.io");
+//   const aggregatorV3InterfaceABI = [{ "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "description", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint80", "name": "_roundId", "type": "uint80" }], "name": "getRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "latestRoundData", "outputs": [{ "internalType": "uint80", "name": "roundId", "type": "uint80" }, { "internalType": "int256", "name": "answer", "type": "int256" }, { "internalType": "uint256", "name": "startedAt", "type": "uint256" }, { "internalType": "uint256", "name": "updatedAt", "type": "uint256" }, { "internalType": "uint80", "name": "answeredInRound", "type": "uint80" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "version", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }];
+//   const addr = oracle_address;
+//   const priceFeed = new ethers.Contract(addr, aggregatorV3InterfaceABI, provider_testnet);
 
+//   try {
+//     var result = await priceFeed.latestRoundData();
+//     console.log("Latest Round Data", result[1]);
+//     return result[1]; //returns in BigNumber format
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+async function getExchangeRate(oracle_address) {
+  var oracle = new ethers.Contract(oracle_address, CHAINLINK_ORACLE_ABI, provider);
   try {
-    var result = await priceFeed.latestRoundData();
-    console.log("Latest Round Data", result[1]);
-    return result[1]; //returns in BigNumber format
+    var exchangeRate = await oracle.latestAnswer();
+    return exchangeRate; //returns in BigNumber format
   } catch (error) {
     console.log(error);
   }
