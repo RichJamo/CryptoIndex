@@ -10,27 +10,27 @@ import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 contract SushiIndex {
     using SafeMath for uint256;
 
-    address public constant USDC_ADDRESS = 0x985458E523dB3d53125813eD68c274899e9DfAb4;
+    address public constant USDC_ADDRESS = 0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174;
     
-    address public constant WONE_ADDRESS = 0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a;
-    address public constant SUSHI_ADDRESS = 0xBEC775Cb42AbFa4288dE81F387a9b1A3c4Bc552A;
-    address public constant WETH_ADDRESS = 0x6983D1E6DEf3690C4d616b13597A09e6193EA013;
-    address public constant WBTC_ADDRESS = 0x3095c7557bCb296ccc6e363DE01b760bA031F2d9;
+    address public constant WMATIC_ADDRESS = 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270;
+    address public constant SUSHI_ADDRESS = 0x0b3F868E0BE5597D5DB7fEB59E1CADBb0fdDa50a;
+    address public constant WETH_ADDRESS = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
+    address public constant WBTC_ADDRESS = 0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6;
 
     // address public constant ONE_USD_ORACLE = 0xcEe686F89bc0dABAd95AEAAC980aE1d97A075FAD;
     // address public constant WBTC_USD_ORACLE = 0xEF637736B220a58C661bfF4b71e03ca898DCC0Bd;
     // address public constant ETH_USD_ORACLE = 0x4f11696cE92D78165E1F8A9a4192444087a45b64;
     // address public constant SUSHI_USD_ORACLE = 0x90142a6930ecF80F1d14943224C56CFe0CD0d347;
 
-    address[] public USDCToWONEPath = [USDC_ADDRESS, WONE_ADDRESS];
-    address[] public USDCToSUSHIPath = [USDC_ADDRESS, WONE_ADDRESS, SUSHI_ADDRESS];
-    address[] public USDCToWETHPath = [USDC_ADDRESS, WONE_ADDRESS, WETH_ADDRESS];
-    address[] public USDCToWBTCPath = [USDC_ADDRESS, WONE_ADDRESS, WBTC_ADDRESS];
+    address[] public USDCToWMATICPath = [USDC_ADDRESS, WMATIC_ADDRESS];
+    address[] public USDCToSUSHIPath = [USDC_ADDRESS, WMATIC_ADDRESS, SUSHI_ADDRESS];
+    address[] public USDCToWETHPath = [USDC_ADDRESS, WMATIC_ADDRESS, WETH_ADDRESS];
+    address[] public USDCToWBTCPath = [USDC_ADDRESS, WMATIC_ADDRESS, WBTC_ADDRESS];
 
-    address[] public WONEToUSDCPath = [WONE_ADDRESS, USDC_ADDRESS];
-    address[] public SUSHIToUSDCPath = [SUSHI_ADDRESS, WONE_ADDRESS, USDC_ADDRESS];
-    address[] public WETHToUSDCPath = [WETH_ADDRESS, WONE_ADDRESS, USDC_ADDRESS];
-    address[] public WBTCToUSDCPath = [WBTC_ADDRESS, WONE_ADDRESS,USDC_ADDRESS];
+    address[] public WMATICToUSDCPath = [WMATIC_ADDRESS, USDC_ADDRESS];
+    address[] public SUSHIToUSDCPath = [SUSHI_ADDRESS, WMATIC_ADDRESS, USDC_ADDRESS];
+    address[] public WETHToUSDCPath = [WETH_ADDRESS, WMATIC_ADDRESS, USDC_ADDRESS];
+    address[] public WBTCToUSDCPath = [WBTC_ADDRESS, WMATIC_ADDRESS,USDC_ADDRESS];
 
     address public constant SUSHISWAP_ROUTER = 0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506;
     
@@ -93,7 +93,7 @@ contract SushiIndex {
         setSharesFirstTime(address_from);
     }
 
-    function depositUserFunds (uint256 amount_, address token_address, address address_from, uint256 WONE_balanceInUSD, uint256 SUSHI_balanceInUSD, uint256 WETH_balanceInUSD, uint256 WBTC_balanceInUSD) public  {
+    function depositUserFunds (uint256 amount_, address token_address, address address_from, uint256 WMATIC_balanceInUSD, uint256 SUSHI_balanceInUSD, uint256 WETH_balanceInUSD, uint256 WBTC_balanceInUSD) public  {
         // TO DO - replace with deposit(amount_, token_address, address_from);
         IERC20 token_ = IERC20(token_address);
 
@@ -105,10 +105,10 @@ contract SushiIndex {
 
         approve_spending(USDC_ADDRESS, SUSHISWAP_ROUTER, amount_);
 
-        uint256 Total_in_USD = WONE_balanceInUSD.add(SUSHI_balanceInUSD).add(WETH_balanceInUSD).add(WBTC_balanceInUSD);
+        uint256 Total_in_USD = WMATIC_balanceInUSD.add(SUSHI_balanceInUSD).add(WETH_balanceInUSD).add(WBTC_balanceInUSD);
         
         if (Total_in_USD > 0) {
-            swapProportionately(WONE_balanceInUSD, SUSHI_balanceInUSD, WETH_balanceInUSD, WBTC_balanceInUSD, Total_in_USD, amount_);
+            swapProportionately(WMATIC_balanceInUSD, SUSHI_balanceInUSD, WETH_balanceInUSD, WBTC_balanceInUSD, Total_in_USD, amount_);
             updateSharesOnDeposit(address_from, Total_in_USD, amount_);
         } else {
             swapIntoFourEqualParts(amount_);
@@ -123,20 +123,20 @@ contract SushiIndex {
         .div(10**(token_decimals+2));
     }
 
-    function swapProportionately(uint256 WONE_amount, uint256 SUSHI_amount, uint256 WETH_amount, uint256 WBTC_amount, uint256 totalUSDAmount, uint256 depositAmount) public {
-        uint256 WONE_share = WONE_amount.mul(depositAmount).div(totalUSDAmount); 
+    function swapProportionately(uint256 WMATIC_amount, uint256 SUSHI_amount, uint256 WETH_amount, uint256 WBTC_amount, uint256 totalUSDAmount, uint256 depositAmount) public {
+        uint256 WMATIC_share = WMATIC_amount.mul(depositAmount).div(totalUSDAmount); 
         uint256 SUSHI_share = SUSHI_amount.mul(depositAmount).div(totalUSDAmount);
         uint256 WETH_share = WETH_amount.mul(depositAmount).div(totalUSDAmount);
         uint256 WBTC_share = WBTC_amount.mul(depositAmount).div(totalUSDAmount);
 
-        swap(WONE_share, uint256(0), USDCToWONEPath, address(this), uint256(-1));
+        swap(WMATIC_share, uint256(0), USDCToWMATICPath, address(this), uint256(-1));
         swap(SUSHI_share, uint256(0), USDCToSUSHIPath, address(this), uint256(-1));
         swap(WETH_share, uint256(0), USDCToWETHPath, address(this), uint256(-1));
         swap(WBTC_share, uint256(0), USDCToWBTCPath, address(this), uint256(-1));
     }
 
     function swapIntoFourEqualParts(uint256 amount) public {
-        swap(amount.div(4), uint256(0), USDCToWONEPath, address(this), uint256(-1));
+        swap(amount.div(4), uint256(0), USDCToWMATICPath, address(this), uint256(-1));
         swap(amount.div(4), uint256(0), USDCToSUSHIPath, address(this), uint256(-1));
         swap(amount.div(4), uint256(0), USDCToWETHPath, address(this), uint256(-1));
         swap(amount.div(4), uint256(0), USDCToWBTCPath, address(this), uint256(-1));
@@ -159,17 +159,17 @@ contract SushiIndex {
 
     function withdrawUserFunds(address user) public {
 
-        uint256 WONE_amount = getUserShares(user).mul(balanceOf(WONE_ADDRESS, address(this))).div(totalNumberOfShares);
+        uint256 WMATIC_amount = getUserShares(user).mul(balanceOf(WMATIC_ADDRESS, address(this))).div(totalNumberOfShares);
         uint256 SUSHI_amount = getUserShares(user).mul(balanceOf(SUSHI_ADDRESS, address(this))).div(totalNumberOfShares);
         uint256 WETH_amount = getUserShares(user).mul(balanceOf(WETH_ADDRESS, address(this))).div(totalNumberOfShares);
         uint256 WBTC_amount = getUserShares(user).mul(balanceOf(WBTC_ADDRESS, address(this))).div(totalNumberOfShares);
 
-        approveSpendingWholeBalance(WONE_ADDRESS, SUSHISWAP_ROUTER);
+        approveSpendingWholeBalance(WMATIC_ADDRESS, SUSHISWAP_ROUTER);
         approveSpendingWholeBalance(SUSHI_ADDRESS, SUSHISWAP_ROUTER);
         approveSpendingWholeBalance(WETH_ADDRESS, SUSHISWAP_ROUTER);
         approveSpendingWholeBalance(WBTC_ADDRESS, SUSHISWAP_ROUTER);
 
-        swapFourTokensBackToUSDC(WONE_amount, SUSHI_amount, WETH_amount, WBTC_amount);
+        swapFourTokensBackToUSDC(WMATIC_amount, SUSHI_amount, WETH_amount, WBTC_amount);
 
         approveSpendingWholeBalance(USDC_ADDRESS, user);
         
@@ -191,7 +191,7 @@ contract SushiIndex {
 
     function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) public {
         approve_spending(_tokenToSwap, SUSHISWAP_ROUTER, _amountToBeSwapped);
-        if (_tokenToSwap == WONE_ADDRESS || _tokenSwappingTo == WONE_ADDRESS) {
+        if (_tokenToSwap == WMATIC_ADDRESS || _tokenSwappingTo == WMATIC_ADDRESS) {
             address[] memory _path = new address[](2);
             _path[0] = _tokenToSwap;
             _path[1] = _tokenSwappingTo;
@@ -199,7 +199,7 @@ contract SushiIndex {
         } else {
             address[] memory _path = new address[](3);
             _path[0] = _tokenToSwap;
-            _path[1] = WONE_ADDRESS;
+            _path[1] = WMATIC_ADDRESS;
             _path[2] = _tokenSwappingTo;
             swap(_amountToBeSwapped, uint256(0), _path, address(this), uint256(-1));
         }
@@ -211,8 +211,8 @@ contract SushiIndex {
         approve_spending(_token, _spender, tokenBalance);
     }
 
-    function swapFourTokensBackToUSDC(uint256 WONE_amount, uint256 SUSHI_amount, uint256 WETH_amount, uint256 WBTC_amount) public {
-        swap(WONE_amount, uint256(0), WONEToUSDCPath, address(this), uint256(-1));
+    function swapFourTokensBackToUSDC(uint256 WMATIC_amount, uint256 SUSHI_amount, uint256 WETH_amount, uint256 WBTC_amount) public {
+        swap(WMATIC_amount, uint256(0), WMATICToUSDCPath, address(this), uint256(-1));
         swap(SUSHI_amount, uint256(0), SUSHIToUSDCPath, address(this), uint256(-1));
         swap(WETH_amount, uint256(0), WETHToUSDCPath, address(this), uint256(-1));
         swap(WBTC_amount, uint256(0), WBTCToUSDCPath, address(this), uint256(-1));
