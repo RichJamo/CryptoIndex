@@ -1,4 +1,4 @@
-const DAPP_ADDRESS = "0x52B8634260b461Ce27b73fC1BA29924bB51AA28d"; //insert the address I deployed to
+const DAPP_ADDRESS = "0x2D34147dAE678be2282EdB3A64C2eFd3909Fb080"; //insert the address I deployed to
 
 const USDC_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 
@@ -229,7 +229,7 @@ async function getTokenInfoViaTokenContract() {
   //create a coin object for each of our 4 assets
   var WMATIC = new Coin("WMATIC", WMATIC_ADDRESS, MATIC_USD_ORACLE);
   var SUSHI = new Coin("SUSHI", SUSHI_ADDRESS, SUSHI_USD_ORACLE);
-  var WBTC = new Coin("WBTC", WBTC_ADDRESS, WBTC_USD_ORACLE);
+  var WBTC = new Coin("WBTC", WBTC_ADDRESS, BTC_USD_ORACLE);
   var WETH = new Coin("WETH", WETH_ADDRESS, ETH_USD_ORACLE);
 
   var array_coins = [WMATIC, SUSHI, WBTC, WETH];
