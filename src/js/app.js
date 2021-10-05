@@ -1,4 +1,4 @@
-const DAPP_ADDRESS = "0x16e5899Bb491357ed09F99AA0252458bf778701c"; //insert the address I deployed to
+const DAPP_ADDRESS = "0xC0dB91699c3599ACDd39E28125BCAa380154Ecb7"; //insert the address I deployed to
 
 const USDC_ADDRESS = "0x985458E523dB3d53125813eD68c274899e9DfAb4" //one1np293efrmv74xyjcz0kk3sn53x0fm745f2hsuc
 
@@ -91,7 +91,7 @@ async function startApp(provider) {
     var depositAmountUSDC = $("#depositAmountUSDC").val(); //put in some checks here? positive number, between x and y, user has enough funds...
     console.log(`Depositing ${depositAmountUSDC} of USDC to the SushiIndex account`);
     $("#swapStarted").css("display", "block");
-    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC to the SushiIndex account`);
+    $("#swapStarted").text(`Depositing ${depositAmountUSDC} of USDC to the Harmony Index account`);
     var array_coins = await getTokenInfo(DAPP_ADDRESS);
     var WMATIC_balanceInUSD = array_coins[0].usd_balance;
     console.log(WMATIC_balanceInUSD);
@@ -156,12 +156,12 @@ async function startApp(provider) {
 
     // dappContract_signer.approveSpendingWholeBalance(WONE_ADDRESS, SUSHISWAP_ROUTER);
     // // dappContract_signer.approveSpendingWholeBalance(SUSHI_ADDRESS, SUSHISWAP_ROUTER);
-    // // dappContract_signer.approveSpendingWholeBalance(WETH_ADDRESS, SUSHISWAP_ROUTER);
+    // dappContract_signer.approveSpendingWholeBalance(WETH_ADDRESS, SUSHISWAP_ROUTER);
     // // dappContract_signer.approveSpendingWholeBalance(WBTC_ADDRESS, SUSHISWAP_ROUTER);
 
     // dappContract_signer.swapBackToUSDC(WONE_ADDRESS, WONE_amount);
     // dappContract_signer.swapBackToUSDC(SUSHI_ADDRESS, SUSHI_amount);
-    // dappContract_signer.swapBackToUSDC(WETH_ADDRESS, WETH_amount);
+    // dappContract_signer.withdrawAll(user, WETH_ADDRESS);
     // dappContract_signer.swapBackToUSDC(WBTC_ADDRESS, WBTC_amount);
 
     // dappContract_signer.approveSpendingWholeBalance(USDC_ADDRESS, user);

@@ -595,6 +595,59 @@ var sushi_index_abi = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_from1",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to1",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount1",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_from2",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to2",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount2",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_from3",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to3",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount3",
+        "type": "uint256"
+      }
+    ],
+    "name": "executeThreeSwaps",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_tokenToSwap",
         "type": "address"
       },

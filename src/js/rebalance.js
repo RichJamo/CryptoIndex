@@ -1,4 +1,4 @@
-const DAPP_ADDRESS = "0x16e5899Bb491357ed09F99AA0252458bf778701c"; //insert the address I deployed to
+const DAPP_ADDRESS = "0xC0dB91699c3599ACDd39E28125BCAa380154Ecb7"; //insert the address I deployed to
 
 const USDC_ADDRESS = "0x985458e523db3d53125813ed68c274899e9dfab4" //one1np293efrmv74xyjcz0kk3sn53x0fm745f2hsuc
 
@@ -99,13 +99,13 @@ async function balanceAndRemoveOneCoin(array_coins) {
     swapCounter++;
   } while (array_coins.length > 1)
 
-  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0])
-  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1])
-  await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2])
+  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0])
+  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1])
+  // await dappContract_signer.executeRebalancingSwap(token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2])
 
-  // await dappContract_signer.executeThreeSwaps(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0],
-  //   token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1],
-  //   token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2]);
+  await dappContract_signer.executeThreeSwaps(token_to_be_swapped_address[0], token_swapping_to_address[0], amount_to_be_swapped[0],
+    token_to_be_swapped_address[1], token_swapping_to_address[1], amount_to_be_swapped[1],
+    token_to_be_swapped_address[2], token_swapping_to_address[2], amount_to_be_swapped[2]);
 }
 
 function sortCoinsDescendingByDiffFromAvg(_array_coins) {
@@ -144,8 +144,8 @@ function getSwapInputs(array_coins) {
     var amountOutMin_Wei = parseInt(amountOutMin * 10 ** array_coins[array_coins.length - 1].decimals).toString()
 
     console.log(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
-    $("#swapStarted").css("display", "block");
-    $("#swapStarted").text(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
+    // $("#swapStarted").css("display", "block");
+    // $("#swapStarted").text(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
 
     return [amountIn_Wei, amountOutMin_Wei, swap_path];
   }
@@ -159,8 +159,8 @@ function getSwapInputs(array_coins) {
     var amountOutMin_Wei = parseInt(amountOutMin * 10 ** array_coins[array_coins.length - 1].decimals).toString()
 
     console.log(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
-    $("#swapStarted").css("display", "block");
-    $("#swapStarted").text(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
+    // $("#swapStarted").css("display", "block");
+    // $("#swapStarted").text(`Swapping ${amountIn.toFixed(8)} of ${array_coins[0].symbol} for ${array_coins[array_coins.length - 1].symbol}`);
 
     return [amountIn_Wei, amountOutMin_Wei, swap_path];
   }
