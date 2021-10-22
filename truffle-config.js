@@ -23,7 +23,9 @@
  // const infuraKey = "fj4jll3k.....";
  
  const fs = require('fs');
- const mnemonic = fs.readFileSync(".secret").toString().trim();
+ const mnemonic = process.env.MNEMONIC;
+
+//  const mnemonic = fs.readFileSync(".env").toString().trim();
  
  const api_key = fs.readFileSync(".env").toString().trim();
  
@@ -57,6 +59,20 @@
        timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
        skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
      },
+     binance: {
+      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
+      network_id: 56,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+     },
+     binance_testnet: {
+      provider: () => new HDWalletProvider(mnemonic, `https://data-seed-prebsc-1-s1.binance.org:8545/`),
+      network_id: 97,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+     }
    },
    contracts_directory: './contracts/',
    // Set default mocha options here, use special reporters etc.
@@ -83,7 +99,8 @@
      'truffle-plugin-verify'
    ],
    api_keys: {
-     polygonscan: process.env.MY_API_KEY
+     polygonscan: process.env.POLYGONSCAN_API_KEY,
+     bscscan: process.env.BSCSCAN_API_KEY,
    },
    // Truffle DB is currently disabled by default; to enable it, change enabled: false to enabled: true
    //

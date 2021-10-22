@@ -1,6 +1,6 @@
-var SushiIndex = artifacts.require("./sushiIndex.sol");
+var CryptoIndex = artifacts.require("./CryptoIndexBinance.sol");
 
 module.exports = function(deployer) {
   
-  deployer.deploy(SushiIndex);
+  deployer.deploy(CryptoIndex);
 };

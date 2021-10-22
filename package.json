@@ -17,6 +17,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.7",
     "lite-server": "^2.6.1",
     "truffle-plugin-verify": "^0.5.14",
     "webpack": "^5.40.0",
@@ -29,8 +35,8 @@
     "@openzeppelin/contracts": "^3.4.0",
     "coingecko-api": "^1.0.10",
     "dotenv": "^10.0.0",
-    "ethers": "^5.3.1",
     "gh-pages": "^3.2.3",
+    "hardhat-waffle": "0.0.1-security",
     "solc": "^0.8.7-fixed",
     "tslib": "^2.3.1"
   }
