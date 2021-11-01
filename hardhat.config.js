@@ -42,7 +42,7 @@
        },
        forking: {
          url: "https://speedy-nodes-nyc.moralis.io/bb704b2a1409ecfe996325ed/bsc/mainnet/archive",
-         blockNumber: 11996000,
+         blockNumber: 12189230,
        },
        chainId: chainIds.hardhat,
        hardfork: "london",

@@ -37,7 +37,7 @@ contract CryptoIndexBinance {
     address public constant LTC_USD_ORACLE = 0x74E72F37A8c415c8f1a98Ed42E78Ff997435791D; 
     address public constant LINK_USD_ORACLE = 0xca236E327F629f9Fc2c30A4E95775EbF0B89fac8;
 
-    mapping (address => address) private oracle_addresses;
+    mapping (address => address) public oracle_addresses;
 
     constructor () public {
         oracle_addresses[BTCB_ADDRESS] = BTC_USD_ORACLE;
@@ -59,7 +59,7 @@ contract CryptoIndexBinance {
     uint256 public totalNumberOfShares;
     mapping(address => uint256) public userNumberOfShares; 
 
-    IUniswapV2Router02 public sushiSwapRouter = IUniswapV2Router02(APESWAP_ROUTER);
+    IUniswapV2Router02 public router = IUniswapV2Router02(APESWAP_ROUTER);
     //more variables here
     // constructor() autoBalancer public {
     // } 
@@ -132,7 +132,6 @@ contract CryptoIndexBinance {
         uint256[] memory token_USD_balances = new uint256[](token_addresses.length);
 
         for (uint i; i<token_addresses.length; i++) {
-            address[] memory token_balances = new address[](token_addresses.length);
             token_USD_balances[i] = getUSDBalanceOf(token_addresses[i]);
             Total_in_USD = Total_in_USD.add(token_USD_balances[i]);
         }
@@ -161,13 +160,23 @@ contract CryptoIndexBinance {
         ) public 
         {
             for (uint i; i<token_addresses.length; i++) {
-                address[] memory _path = new address[](2);
-                _path[0] = USDC_ADDRESS;
-                _path[1] = token_addresses[i];
+                if (token_addresses[i] == BNB_ADDRESS) {
+                    address[] memory _path = new address[](2);
+                    _path[0] = USDC_ADDRESS;
+                    _path[1] = BNB_ADDRESS;
 
-                uint256 token_share = token_USD_balances[i].mul(depositAmount).div(totalUSDAmount);
-                swap(token_share, uint256(0), _path, address(this), uint256(-1));
+                    uint256 token_share = token_USD_balances[i].mul(depositAmount).div(totalUSDAmount);
+                    swap(token_share, uint256(0), _path, address(this), uint256(-1));
+                } else {
+                    address[] memory _path = new address[](3);
+                    _path[0] = USDC_ADDRESS;
+                    _path[1] = BNB_ADDRESS;
+                    _path[2] = token_addresses[i];
+
+                    uint256 token_share = token_USD_balances[i].mul(depositAmount).div(totalUSDAmount);
+                    swap(token_share, uint256(0), _path, address(this), uint256(-1));
                 }
+            }
     }
 
     function swapIntoNEqualParts(uint256 amount, address[] memory token_addresses) public {
@@ -175,7 +184,7 @@ contract CryptoIndexBinance {
             if (token_addresses[i] == BNB_ADDRESS) {
                 address[] memory _path = new address[](2);
                 _path[0] = USDC_ADDRESS;
-                _path[1] = token_addresses[i];
+                _path[1] = BNB_ADDRESS;
                 swap(amount.div(token_addresses.length), uint256(0), _path, address(this), uint256(-1));
             } else {
                 address[] memory _path = new address[](3);
@@ -229,32 +238,30 @@ contract CryptoIndexBinance {
         updateSharesOnWithdrawal(user);
     }
 
-    // function executeThreeSwaps(
-    //     address _from1, address _to1, uint256 _amount1,
-    //     address _from2, address _to2, uint256 _amount2,
-    //     address _from3, address _to3, uint256 _amount3
-    //     ) public {
-    //         executeRebalancingSwap(_from1, _to1, _amount1);
-    //         executeRebalancingSwap(_from2, _to2, _amount2);
-    //         executeRebalancingSwap(_from3, _to3, _amount3);
-    // }
+    function executeNSwaps(
+        address[] memory _from, address[] memory _to, uint256[] memory _amount
+        ) public {
+            for (uint i=0; i<_from.length; i++) {
+            executeRebalancingSwap(_from[i], _to[i], _amount[i]);
+            }
+    }
 
-    // function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) public {
-    //     approve_spending(_tokenToSwap, APESWAP_ROUTER, _amountToBeSwapped);
-    //     if (_tokenToSwap == WMATIC_ADDRESS || _tokenSwappingTo == WMATIC_ADDRESS) {
-    //         address[] memory _path = new address[](2);
-    //         _path[0] = _tokenToSwap;
-    //         _path[1] = _tokenSwappingTo;
-    //         swap(_amountToBeSwapped, uint256(0), _path, address(this), uint256(-1));
-    //     } else {
-    //         address[] memory _path = new address[](3);
-    //         _path[0] = _tokenToSwap;
-    //         _path[1] = WMATIC_ADDRESS;
-    //         _path[2] = _tokenSwappingTo;
-    //         swap(_amountToBeSwapped, uint256(0), _path, address(this), uint256(-1));
-    //     }
+    function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) public {
+        approve_spending(_tokenToSwap, APESWAP_ROUTER, _amountToBeSwapped);
+        if (_tokenToSwap == BNB_ADDRESS || _tokenSwappingTo == BNB_ADDRESS) {
+            address[] memory _path = new address[](2);
+            _path[0] = _tokenToSwap;
+            _path[1] = _tokenSwappingTo;
+            swap(_amountToBeSwapped, uint256(0), _path, address(this), uint256(-1));
+        } else {
+            address[] memory _path = new address[](3);
+            _path[0] = _tokenToSwap;
+            _path[1] = BNB_ADDRESS;
+            _path[2] = _tokenSwappingTo;
+            swap(_amountToBeSwapped, uint256(0), _path, address(this), uint256(-1));
+        }
         
-    // }
+    }
 
     function approveSpendingWholeBalance(address _token, address _spender) public {
         uint256 tokenBalance = IERC20(_token).balanceOf(address(this));
@@ -285,12 +292,17 @@ contract CryptoIndexBinance {
     
     function swap(uint256 _amountIn, uint256 _amountOutMin, address[] memory _path, address _acct, uint256 _deadline) public {
         
-       sushiSwapRouter.swapExactTokensForTokens(
+       try router.swapExactTokensForTokens(
             _amountIn,
             _amountOutMin,
             _path,
             _acct,
-            _deadline);
+            _deadline) {
+                console.log("swap passed");
+            } catch {
+                console.log("swap failed");
+                //could repeat the swap call here? with an if errorCount conditional...
+            }
         }      
     }
     

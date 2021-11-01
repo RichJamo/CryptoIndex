@@ -60,7 +60,7 @@
        skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
      },
      binance: {
-      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.binance.org`),
+      provider: () => new HDWalletProvider(mnemonic, `https://speedy-nodes-nyc.moralis.io/bb704b2a1409ecfe996325ed/bsc/mainnet/archive`),
       network_id: 56,
       confirmations: 10,
       timeoutBlocks: 200,

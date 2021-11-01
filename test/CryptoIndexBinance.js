@@ -21,7 +21,7 @@ const DOGE_ADDRESS = "0xba2ae424d960c26247dd6c32edc70b295c744c43";
 const UNI_ADDRESS = "0xbf5140a22578168fd562dccf235e5d43a02ce9b1";
 // const LUNA_ADDRESS = "0xeccf35f941ab67ffcaa9a1265c2ff88865caa005"; //double check
 const LTC_ADDRESS = "0x4338665cbb7b2485a8855a139b75d5e34ab0db94"; 
-const AVAX_ADDRESS = "0x1CE0c2827e2eF14D5C4f29a091d735A204794041";
+// const AVAX_ADDRESS = "0x1CE0c2827e2eF14D5C4f29a091d735A204794041";
 const LINK_ADDRESS = "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD";
 
 const BTC_USD_ORACLE = "0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf"
@@ -56,6 +56,12 @@ describe('CryptoIndexBinance contract', () => {
     });
 
     describe('Transactions', () => {
+        it('Should retrieve an oracle address if I send in a token address', async () => {
+            btcb_oracle_address = await cryptoIndexBinance.oracle_addresses(BTCB_ADDRESS);
+
+            expect(btcb_oracle_address).to.eq(BTC_USD_ORACLE);
+        })
+
         it('Should take a 100 USDC deposit from the user and split into the index tokens', async () => {
             //approve
             usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
@@ -63,11 +69,11 @@ describe('CryptoIndexBinance contract', () => {
             await usdc.approve(cryptoIndexBinance.address, usdcBalance);
             
             //define tokenlist for index
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, 
 
             //deposit
             await cryptoIndexBinance.depositUserFunds(
-                100 * 10 ** 6,
+                1 * 10 ** 18,
                 USDC_ADDRESS,
                 owner.address,
                 token_addresses
@@ -87,7 +93,7 @@ describe('CryptoIndexBinance contract', () => {
             
             //deposit
             await cryptoIndexBinance.deposit(
-                100 * 10 ** 6,
+                100 * 10 ** 18,
                 USDC_ADDRESS,
                 owner.address
             )
@@ -104,27 +110,47 @@ describe('CryptoIndexBinance contract', () => {
             
             //deposit
             await cryptoIndexBinance.deposit(
-                100 * 10 ** 6,
+                100 * 10 ** 18,
                 USDC_ADDRESS,
                 owner.address
             )
 
             //define tokenlist for index
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
             
             //approve swap
-            await cryptoIndexBinance.approve_spending(USDC_ADDRESS, ROUTER, 100 * 10 ** 6)
+            await cryptoIndexBinance.approve_spending(USDC_ADDRESS, ROUTER, 100 * 10 ** 18)
             
             //swap
             await cryptoIndexBinance.swapIntoNEqualParts(
-                100 * 10 ** 6,
+                100 * 10 ** 18,
                 token_addresses
             )
             
             firstTokenInList = await ethers.getContractAt(token_abi, token_addresses[0]);
             balanceFirstTokenInList = await firstTokenInList.balanceOf(cryptoIndexBinance.address);
+            // bnb = await ethers.getContractAt(token_abi, BNB_ADDRESS);
+            // var bnbBalance = await bnb.balanceOf(cryptoIndexBinance.address);
+            // weth = await ethers.getContractAt(token_abi, WETH_ADDRESS);
+            // var wethBalance = await weth.balanceOf(cryptoIndexBinance.address);
 
             expect(balanceFirstTokenInList).to.not.equal(0);
+        })
+
+        it('Should rebalance by swapping tokens', async () => {
+            bnb = await ethers.getContractAt(token_abi, BNB_ADDRESS);
+            var bnbBalanceBefore = await bnb.balanceOf(cryptoIndexBinance.address);
+            console.log(bnbBalanceBefore);
+
+            await cryptoIndexBinance.executeNSwaps(
+                [BNB_ADDRESS, BTCB_ADDRESS], 
+                [LINK_ADDRESS, ADA_ADDRESS], 
+                [100000, 100000]
+            )
+
+            var bnbBalanceAfter = await bnb.balanceOf(cryptoIndexBinance.address);
+
+            expect(bnbBalanceBefore).to.equal(bnbBalanceAfter.add(100000));
         })
         
         it('Should get USD balance of a token', async () => {
@@ -143,7 +169,7 @@ describe('CryptoIndexBinance contract', () => {
             usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
             var usdcBalanceBefore = await usdc.balanceOf(owner.address);
 
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
 
             await cryptoIndexBinance.withdrawUserFunds(owner.address, token_addresses);
             
@@ -151,6 +177,6 @@ describe('CryptoIndexBinance contract', () => {
 
             expect(usdcBalanceAfter).to.be.gt(usdcBalanceBefore);
         })
-        
+      
     })
 })
