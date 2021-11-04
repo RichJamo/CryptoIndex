@@ -175,9 +175,9 @@ async function displayUSDBalances() {
   TotalInUSD.innerHTML = '$ ' + total_in_usd.toFixed(2);
 
   var userShares = (await dappContract_provider.getUserShares(user)).toNumber()
-  var totalShares = (await dappContract_provider.totalNumberOfShares()).toNumber() //lesson here - overwriting public variable getter function??
-  UserShareInPerc.innerHTML = (userShares / totalShares * 100).toFixed(1) + '%'; //can add a percentage thingie here!
-  USERshareInUSD.innerHTML = '$ ' + (userShares / totalShares * total_in_usd).toFixed(2); //TODO - neaten up this fix
+  // var totalShares = (await dappContract_provider.totalNumberOfShares()).toNumber() //lesson here - overwriting public variable getter function??
+  // UserShareInPerc.innerHTML = (userShares / totalShares * 100).toFixed(1) + '%'; //can add a percentage thingie here!
+  // USERshareInUSD.innerHTML = '$ ' + (userShares / totalShares * total_in_usd).toFixed(2); //TODO - neaten up this fix
 }
 
 async function getTokenInfo(accountOrContract) {
@@ -240,12 +240,12 @@ async function getTokenInfo(accountOrContract) {
   return array_coins;
 }
 
-async function giveApprovalFromUser(token_address, router_address, amountIn) {
+async function giveApprovalFromUser(token_address, spender_address, amountIn) {
   // create a new instance of a contract
   var tokenContract = new ethers.Contract(token_address, token_abi, signer)
-  // give router_address approval to spend user's tokens
+  // give spender_address approval to spend user's tokens
   try {
-    var approved = await tokenContract.approve(router_address, amountIn); //approve(spender, amount)
+    var approved = await tokenContract.approve(spender_address, amountIn); //approve(spender, amount)
     return approved;
 
   } catch (error) {

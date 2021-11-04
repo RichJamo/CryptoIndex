@@ -7,8 +7,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Pausable.sol";
+
 import "hardhat/console.sol";
-contract CryptoIndexBinance {
+contract CryptoIndexBinance is Ownable, Pausable {
     using SafeMath for uint256;
 
     address public constant USDC_ADDRESS = 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d;
@@ -78,7 +81,7 @@ contract CryptoIndexBinance {
         return price;
     }
 
-    function updateSharesOnWithdrawal(address user) public { //make this ownable - only contract itself can update this?
+    function updateSharesOnWithdrawal(address user) private { //make this ownable - only contract itself can update this?
         require (userNumberOfShares[user] > 0, "Error - This user has no shares");
         totalNumberOfShares -= userNumberOfShares[user];
         userNumberOfShares[user] = 0;
@@ -95,7 +98,7 @@ contract CryptoIndexBinance {
      receive() external payable {
     }
 
-    function deposit (uint256 _amount, address token_address, address address_from) public {
+    function deposit (uint256 _amount, address token_address, address address_from) public whenNotPaused {
         IERC20 token_ = IERC20(token_address);
 
         token_.transferFrom(
@@ -105,7 +108,7 @@ contract CryptoIndexBinance {
         );
     }
 
-    function depositFirstTime (uint256 _amount, address deposit_token_address, address address_from, address[] memory token_addresses) public {
+    function depositFirstTime (uint256 _amount, address deposit_token_address, address address_from, address[] memory token_addresses) public whenNotPaused {
         deposit(_amount, deposit_token_address, address_from);
 
         approve_spending(USDC_ADDRESS, APESWAP_ROUTER, _amount);
@@ -115,7 +118,7 @@ contract CryptoIndexBinance {
         setSharesFirstTime(address_from);
     }
 
-    function depositUserFunds (uint256 amount_, address token_address, address address_from, address[] memory token_addresses) public  {
+    function depositUserFunds (uint256 amount_, address token_address, address address_from, address[] memory token_addresses) public whenNotPaused {
         // TO DO - replace with deposit(amount_, token_address, address_from);
         IERC20 token_ = IERC20(token_address);
 
@@ -135,10 +138,16 @@ contract CryptoIndexBinance {
             token_USD_balances[i] = getUSDBalanceOf(token_addresses[i]);
             Total_in_USD = Total_in_USD.add(token_USD_balances[i]);
         }
-        
+
         if (Total_in_USD > 0) {
             swapProportionately(token_addresses, token_USD_balances, Total_in_USD, amount_);
-            updateSharesOnDeposit(address_from, Total_in_USD, amount_);
+            uint256 newTotalInUSD;
+            for (uint i; i<token_addresses.length; i++) {
+                token_USD_balances[i] = getUSDBalanceOf(token_addresses[i]);
+                newTotalInUSD = newTotalInUSD.add(token_USD_balances[i]);
+            }
+            uint256 depositedAmountInUSDAfterSwaps = newTotalInUSD.sub(Total_in_USD);
+            updateSharesOnDeposit(address_from, Total_in_USD*10**10, depositedAmountInUSDAfterSwaps*10**10); //from 8 decimals to 18 decimals
         } else {
             swapIntoNEqualParts(amount_, token_addresses);
             setSharesFirstTime(address_from);
@@ -157,7 +166,7 @@ contract CryptoIndexBinance {
         uint256[] memory token_USD_balances, 
         uint256 totalUSDAmount, 
         uint256 depositAmount
-        ) public 
+        ) public whenNotPaused
         {
             for (uint i; i<token_addresses.length; i++) {
                 if (token_addresses[i] == BNB_ADDRESS) {
@@ -179,7 +188,7 @@ contract CryptoIndexBinance {
             }
     }
 
-    function swapIntoNEqualParts(uint256 amount, address[] memory token_addresses) public {
+    function swapIntoNEqualParts(uint256 amount, address[] memory token_addresses) public whenNotPaused {
         for (uint i; i<token_addresses.length; i++) {
             if (token_addresses[i] == BNB_ADDRESS) {
                 address[] memory _path = new address[](2);
@@ -196,13 +205,14 @@ contract CryptoIndexBinance {
         }
     }
 
-    function setSharesFirstTime(address user) public {
+    function setSharesFirstTime(address user) private {
         userNumberOfShares[user] = 100000000;
         totalNumberOfShares = 100000000;
     }
 
-    function updateSharesOnDeposit(address user, uint256 total_in_USD, uint256 deposit_amount) public { //make this ownable - only contract itself can update this?
-        uint256 newSharesForUser = deposit_amount.mul(totalNumberOfShares).div(total_in_USD);
+    function updateSharesOnDeposit(address user, uint256 total_in_USD, uint256 depositedAmountInUSDAfterSwaps) private { //make this ownable - only contract itself can update this?
+        uint256 newSharesForUser = depositedAmountInUSDAfterSwaps.mul(totalNumberOfShares).div(total_in_USD);
+
         totalNumberOfShares = totalNumberOfShares.add(newSharesForUser);
         if (userNumberOfShares[user] > 0) {
             userNumberOfShares[user] = userNumberOfShares[user].add(newSharesForUser);
@@ -211,7 +221,8 @@ contract CryptoIndexBinance {
         }
     }
 
-    function withdrawUserFunds(address user, address[] memory token_addresses) public {
+
+    function withdrawUserFunds(address user, address[] memory token_addresses) public whenNotPaused {
 
         for (uint i; i<token_addresses.length; i++) {
             uint256 token_amount = getUserShares(user).mul(balanceOf(token_addresses[i], address(this))).div(totalNumberOfShares);
@@ -238,15 +249,42 @@ contract CryptoIndexBinance {
         updateSharesOnWithdrawal(user);
     }
 
+function emergencyWithdrawAll(address user, address[] memory token_addresses) public whenPaused onlyOwner {
+
+        for (uint i; i<token_addresses.length; i++) {
+            approveSpendingWholeBalance(token_addresses[i], APESWAP_ROUTER);
+            uint256 token_amount = balanceOf(token_addresses[i], address(this));
+            if (token_addresses[i] == BNB_ADDRESS) {
+                address[] memory _path = new address[](2);
+                _path[0] = token_addresses[i];
+                _path[1] = USDC_ADDRESS;
+                swap(token_amount, uint256(0), _path, address(this), uint256(-1));
+            } else {
+                address[] memory _path = new address[](3);
+                _path[0] = token_addresses[i];
+                _path[1] = BNB_ADDRESS;
+                _path[2] = USDC_ADDRESS;
+                swap(token_amount, uint256(0), _path, address(this), uint256(-1));
+            }
+        }
+
+        approveSpendingWholeBalance(USDC_ADDRESS, user);
+        
+        uint256 USDC_amount = balanceOf(USDC_ADDRESS, address(this));
+        IERC20(USDC_ADDRESS).transfer(user, USDC_amount);
+
+        //resetShares(); perhaps implement in future?
+    }
+
     function executeNSwaps(
         address[] memory _from, address[] memory _to, uint256[] memory _amount
-        ) public {
+        ) private {
             for (uint i=0; i<_from.length; i++) {
             executeRebalancingSwap(_from[i], _to[i], _amount[i]);
             }
     }
 
-    function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) public {
+    function executeRebalancingSwap(address _tokenToSwap, address _tokenSwappingTo, uint256 _amountToBeSwapped) private {
         approve_spending(_tokenToSwap, APESWAP_ROUTER, _amountToBeSwapped);
         if (_tokenToSwap == BNB_ADDRESS || _tokenSwappingTo == BNB_ADDRESS) {
             address[] memory _path = new address[](2);
@@ -263,25 +301,25 @@ contract CryptoIndexBinance {
         
     }
 
-    function approveSpendingWholeBalance(address _token, address _spender) public {
+    function approveSpendingWholeBalance(address _token, address _spender) private {
         uint256 tokenBalance = IERC20(_token).balanceOf(address(this));
         approve_spending(_token, _spender, tokenBalance);
     }
     
-    function withdraw_matic(uint256 amount_) public {
+    function withdraw_matic(uint256 amount_) public onlyOwner {
         msg.sender.transfer(amount_); //TODO - change?
     }
 
-    function withdrawAllUSDC(address _user) public {
+    function withdrawAllUSDC(address _user) public onlyOwner {
         approveSpendingWholeBalance(USDC_ADDRESS, _user);
         uint256 USDC_amount = balanceOf(USDC_ADDRESS, address(this));
         IERC20(USDC_ADDRESS).transfer(_user, USDC_amount);
     }
 
-    function withdrawAll(address _user, address _token_address) public {
+    function withdrawAll(address _user, address _token_address) public onlyOwner {
         approveSpendingWholeBalance(_token_address, _user);
-        uint256 USDC_amount = balanceOf(_token_address, address(this));
-        IERC20(_token_address).transfer(_user, USDC_amount);
+        uint256 amount = balanceOf(_token_address, address(this));
+        IERC20(_token_address).transfer(_user, amount);
     }
 
     function balanceOf(address token_address, address user_address) public view returns (uint256 token_balance) {
@@ -290,7 +328,7 @@ contract CryptoIndexBinance {
         return token_balance;
     }
     
-    function swap(uint256 _amountIn, uint256 _amountOutMin, address[] memory _path, address _acct, uint256 _deadline) public {
+    function swap(uint256 _amountIn, uint256 _amountOutMin, address[] memory _path, address _acct, uint256 _deadline) private {
         
        try router.swapExactTokensForTokens(
             _amountIn,
@@ -303,8 +341,20 @@ contract CryptoIndexBinance {
                 console.log("swap failed");
                 //could repeat the swap call here? with an if errorCount conditional...
             }
-        }      
+        }   
+    
+    function pause() external onlyOwner {
+        _pause();
     }
+
+    function unpause() external onlyOwner {
+        _unpause();
+    }
+
+
+    }
+
+    
     
 
     

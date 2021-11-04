@@ -9,24 +9,25 @@
   <title>SMEB Index</title>
 
   <!-- Bootstrap -->
+  <link href="./src/css/custom.css" rel="stylesheet">
   <link href="./src/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.14.1/css/mdb.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./src/css/metamask.css" type="text/css">
-  
+
   <script src="./src/token_abi.js"></script>
   <script src="./src/chainlink_abi.js"></script>
   <script src="./src/router_abi.js"></script>
   <script src="./src/router_abi_QS.js"></script>
   <script src="./src/js/ethers.umd.min.js" type="application/javascript"></script>
-  <script src="./src/sushi_index_abi.js"></script>
+  <script src="./src/cryptoIndexBinance_abi.js"></script>
 
 </head>
 
 <body>
   <main class="container-fluid">
     <header>
-      <h1 class="text-center">SushiIndex</h1>
+      <h1 class="text-center">CryptoIndex</h1>
       <p class="text-center">Rebalancing page - admins only.</p>
 
     </header>
@@ -34,10 +35,18 @@
     <section>
           <div class="card">
             <div class="card-body">
-              <button class="btn btn-primary btn-lg btn-block mb-3" id="rebalance_1">Rebalance (do the 3 swaps)</button>
+              <button class="btn btn-primary btn-lg btn-block mb-3" id="rebalance_1">Rebalance (do the swaps)</button>
             </div>
           </div>
     </section>
+
+    <section>
+      <div class="card">
+        <div class="card-body">
+          <button class="btn btn-primary btn-lg btn-block mb-3" id="emergency_withdraw">Emergency withdraw</button>
+        </div>
+      </div>
+</section>
 
     <section>
 

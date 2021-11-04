@@ -36,7 +36,7 @@ var user;
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 const signer = provider.getSigner()
 
-const dappContract_signer = new ethers.Contract(DAPP_ADDRESS, sushi_index_abi, signer);
+const dappContract_signer = new ethers.Contract(DAPP_ADDRESS, cryptoIndexBinance_abi, signer);
 
 /*****************************************/
 /* Detect the MetaMask Ethereum provider */
@@ -87,6 +87,7 @@ async function checkNetworkId(_provider) {
 async function startApp(provider) {
   //Basic Actions Section
   const rebalanceOneButton = document.getElementById('rebalance_1');
+  const emeergencyWithdrawButton = document.getElementById('emergency_withdraw');
 
   const accounts = await ethereum.request({ method: 'eth_accounts' });
   user = accounts[0];
@@ -98,6 +99,15 @@ async function startApp(provider) {
     //might this bit be partly easier to implement in solidity - it will wait better?
     await balanceAndRemoveOneCoin(array_coins);
   })
+
+  emeergencyWithdrawButton.addEventListener('click', async () => {
+    var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS];
+    //put in gas estimation here
+    for (var token of token_addresses) {
+      await dappContract_signer.withdrawAll(user, token);
+    }
+  })
+
 }
 
 async function balanceAndRemoveOneCoin(array_coins) {
@@ -257,6 +267,7 @@ async function getTokenInfoViaTokenContract() {
     coin.usd_exchange_rate = await getExchangeRate(coin.oracleAddress);
     coin.decimals = await getDecimals(coin.address);
     coin.usd_balance = parseFloat(ethers.utils.formatUnits(coin.balance, coin.decimals)) * coin.usd_exchange_rate;
+    coin.symbol = await getSymbol(coin.address);
     total_in_usd += coin.usd_balance;
   }
 
@@ -268,18 +279,6 @@ async function getTokenInfoViaTokenContract() {
   return array_coins;
 }
 
-async function executeDappSwap(_amountIn, _amountOutMin, _path, _acct, _deadline) {
-  console.log(`Swapping ${_amountIn} of ${_path[0]} into ${_path[1]}`);
-  $("#swapStarted").css("display", "block");
-  $("#swapStarted").text(`Swapping ${_amountIn} of ${_path[0]} into ${_path[1]}`);
-  var estimatedGasLimit = await dappContract_signer.estimateGas.swap(_amountIn, _amountOutMin, _path, _acct, _deadline);
-  try {
-    await dappContract_signer.swap(_amountIn, _amountOutMin, _path, _acct, _deadline, { gasLimit: parseInt(estimatedGasLimit * 1.2) });
-  }
-  catch (error) {
-    console.log(error); //can I get it to try again here??
-  }
-}
 
 async function giveApprovalFromDapp(token_address, router_address, amountIn) {
   // give router_address approval to spend dapp's tokens
@@ -328,6 +327,17 @@ async function getDecimals(token_address) {
   }
 }
 
+async function getSymbol(token_address) {
+  var tokenContract = new ethers.Contract(token_address, token_abi, provider)
+  // check how many decimals that token has
+  try {
+    var symbol = await tokenContract.symbol();//need to catch an error here - perhaps make this it's own function!
+    return symbol;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function getOracle(token_address) {
   try {
     var oracleAddress = await dappContract_signer.oracle_addresses(token_address); //approve(spender, amount)
@@ -337,3 +347,4 @@ async function getOracle(token_address) {
     console.log(error)
   }
 }
+

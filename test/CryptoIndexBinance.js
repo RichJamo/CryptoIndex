@@ -51,8 +51,17 @@ describe('CryptoIndexBinance contract', () => {
         ]);
 
         uniswapRouter = await ethers.getContractAt(IUniRouter02_abi, ROUTER);
-        await uniswapRouter.swapExactETHForTokens(0, [BNB_ADDRESS, USDC_ADDRESS], owner.address, Date.now() + 900, { value: ethers.utils.parseEther("450") })
+        await uniswapRouter.swapExactETHForTokens(0, [BNB_ADDRESS, USDC_ADDRESS], owner.address, Date.now() + 900, { value: ethers.utils.parseEther("1") })
        
+        await network.provider.send("hardhat_setBalance", [
+            addr1.address,
+            "0x21E19E0C9BAB2400000", //amount of 1000 BNB in hex
+        ]);
+
+        await uniswapRouter.connect(addr1).swapExactETHForTokens(0, [BNB_ADDRESS, USDC_ADDRESS], addr1.address, Date.now() + 900, { value: ethers.utils.parseEther("1") })
+       
+        const total_in_USD_before_deposit = ethers.BigNumber.from("0");
+        const depositedAmountInUSDAfterSwaps = ethers.BigNumber.from("0");
     });
 
     describe('Transactions', () => {
@@ -62,18 +71,17 @@ describe('CryptoIndexBinance contract', () => {
             expect(btcb_oracle_address).to.eq(BTC_USD_ORACLE);
         })
 
-        it('Should take a 100 USDC deposit from the user and split into the index tokens', async () => {
+        it('Should take a 10 USDC deposit from the user and split into the index tokens', async () => {
             //approve
             usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
             var usdcBalance = await usdc.balanceOf(owner.address);
             await usdc.approve(cryptoIndexBinance.address, usdcBalance);
-            
             //define tokenlist for index
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, 
 
             //deposit
             await cryptoIndexBinance.depositUserFunds(
-                1 * 10 ** 18,
+                ethers.utils.parseUnits("1", 18),
                 USDC_ADDRESS,
                 owner.address,
                 token_addresses
@@ -84,6 +92,60 @@ describe('CryptoIndexBinance contract', () => {
 
             expect(balanceFirstTokenInList).to.not.equal(0);
         })
+
+        it('Should set shares of first user to 100000000 after first deposit', async () => {
+            var user_shares = await cryptoIndexBinance.getUserShares(owner.address);
+            expect(user_shares).to.eq(100000000);
+        })
+
+        it('Should aceept a second 10 USDC deposit from a different user, split into the index tokens proportionately', async () => {
+            //approve 
+            usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
+            var usdcBalanceSecondUser = await usdc.balanceOf(addr1.address);
+            
+            await usdc.connect(addr1).approve(cryptoIndexBinance.address, usdcBalanceSecondUser); //TODO - make this come from addr1 !!
+            
+            //define tokenlist for index - TODO - define this at top??
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, 
+
+            firstTokenInList = await ethers.getContractAt(token_abi, token_addresses[0]);
+            balanceFirstTokenInListBeforeSecondDeposit = await firstTokenInList.balanceOf(cryptoIndexBinance.address);
+            var Total_in_USD = ethers.BigNumber.from("0");
+
+            for (var token of token_addresses) {
+                var token_USD_balances = await cryptoIndexBinance.getUSDBalanceOf(token);
+                Total_in_USD = Total_in_USD.add(token_USD_balances);
+            }
+            total_in_USD_before_deposit = Total_in_USD.mul(10**10);
+
+            //deposit
+            await cryptoIndexBinance.connect(addr1).depositUserFunds(
+                ethers.utils.parseUnits("1", 18),
+                USDC_ADDRESS,
+                addr1.address,
+                token_addresses
+            )
+            
+            Total_in_USD = ethers.BigNumber.from("0");
+            for (var token of token_addresses) {
+                var token_USD_balances = await cryptoIndexBinance.getUSDBalanceOf(token);
+                Total_in_USD = Total_in_USD.add(token_USD_balances);
+            }
+            total_in_USD_after_deposit = Total_in_USD.mul(10**10);
+
+            depositedAmountInUSDAfterSwaps = total_in_USD_after_deposit.sub(total_in_USD_before_deposit);
+
+            balanceFirstTokenInListAfterSecondDeposit = await firstTokenInList.balanceOf(cryptoIndexBinance.address);
+
+            expect(balanceFirstTokenInListAfterSecondDeposit).to.be.gt(balanceFirstTokenInListBeforeSecondDeposit);
+        })
+
+        it('Should set shares of second user correctly after second deposit', async () => {
+            var user2_shares = await cryptoIndexBinance.getUserShares(addr1.address);
+
+            user2_shares_expected = depositedAmountInUSDAfterSwaps.mul("100000000").div(total_in_USD_before_deposit);
+            expect(user2_shares).to.eq(user2_shares_expected);
+        })
         
         it('Should deposit 100 USDC into the contract', async () => {
             //approve
@@ -93,7 +155,7 @@ describe('CryptoIndexBinance contract', () => {
             
             //deposit
             await cryptoIndexBinance.deposit(
-                100 * 10 ** 18,
+                ethers.utils.parseUnits("1", 18),
                 USDC_ADDRESS,
                 owner.address
             )
@@ -110,20 +172,20 @@ describe('CryptoIndexBinance contract', () => {
             
             //deposit
             await cryptoIndexBinance.deposit(
-                100 * 10 ** 18,
+                ethers.utils.parseUnits("1", 18),
                 USDC_ADDRESS,
                 owner.address
             )
 
             //define tokenlist for index
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
             
             //approve swap
-            await cryptoIndexBinance.approve_spending(USDC_ADDRESS, ROUTER, 100 * 10 ** 18)
+            await cryptoIndexBinance.approve_spending(USDC_ADDRESS, ROUTER, ethers.utils.parseUnits("1", 18))
             
             //swap
             await cryptoIndexBinance.swapIntoNEqualParts(
-                100 * 10 ** 18,
+                ethers.utils.parseUnits("1", 18),
                 token_addresses
             )
             
@@ -137,21 +199,21 @@ describe('CryptoIndexBinance contract', () => {
             expect(balanceFirstTokenInList).to.not.equal(0);
         })
 
-        it('Should rebalance by swapping tokens', async () => {
-            bnb = await ethers.getContractAt(token_abi, BNB_ADDRESS);
-            var bnbBalanceBefore = await bnb.balanceOf(cryptoIndexBinance.address);
-            console.log(bnbBalanceBefore);
+        //THIS IS NOW A PRIVATE FUNCTION
+        // it('Should rebalance by swapping tokens', async () => {
+        //     bnb = await ethers.getContractAt(token_abi, BNB_ADDRESS);
+        //     var bnbBalanceBefore = await bnb.balanceOf(cryptoIndexBinance.address);
 
-            await cryptoIndexBinance.executeNSwaps(
-                [BNB_ADDRESS, BTCB_ADDRESS], 
-                [LINK_ADDRESS, ADA_ADDRESS], 
-                [100000, 100000]
-            )
+        //     await cryptoIndexBinance.executeNSwaps(
+        //         [BNB_ADDRESS, BTCB_ADDRESS], 
+        //         [LINK_ADDRESS, ADA_ADDRESS], 
+        //         [100000, 100000]
+        //     )
 
-            var bnbBalanceAfter = await bnb.balanceOf(cryptoIndexBinance.address);
+        //     var bnbBalanceAfter = await bnb.balanceOf(cryptoIndexBinance.address);
 
-            expect(bnbBalanceBefore).to.equal(bnbBalanceAfter.add(100000));
-        })
+        //     expect(bnbBalanceBefore).to.equal(bnbBalanceAfter.add(100000));
+        // })
         
         it('Should get USD balance of a token', async () => {
             btcb_usd_balance = await cryptoIndexBinance.getUSDBalanceOf(
@@ -169,9 +231,24 @@ describe('CryptoIndexBinance contract', () => {
             usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
             var usdcBalanceBefore = await usdc.balanceOf(owner.address);
 
-            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, SOL_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
 
             await cryptoIndexBinance.withdrawUserFunds(owner.address, token_addresses);
+            
+            var usdcBalanceAfter = await usdc.balanceOf(owner.address);
+
+            expect(usdcBalanceAfter).to.be.gt(usdcBalanceBefore);
+        })
+
+        it('Should emergency withdraw all remaining funds from the contract', async () => {
+            usdc = await ethers.getContractAt(token_abi, USDC_ADDRESS);
+            var usdcBalanceBefore = await usdc.balanceOf(owner.address);
+
+            var token_addresses = [BTCB_ADDRESS, WETH_ADDRESS, BNB_ADDRESS, ADA_ADDRESS, XRP_ADDRESS, DOT_ADDRESS, DOGE_ADDRESS, UNI_ADDRESS, LTC_ADDRESS, LINK_ADDRESS]; //SOL_ADDRESS, DOGE_ADDRESS, 
+            
+            await cryptoIndexBinance.pause(); //have to pause before emergencyWithdraw
+
+            await cryptoIndexBinance.emergencyWithdrawAll(owner.address, token_addresses);
             
             var usdcBalanceAfter = await usdc.balanceOf(owner.address);
 

@@ -29,7 +29,7 @@
     "webpack-cli": "^4.7.2"
   },
   "dependencies": {
-    "@chainlink/contracts": "^0.2.1",
+    "@chainlink/contracts": "^0.2.2",
     "@harmony-js/core": "^0.1.57",
     "@metamask/onboarding": "^1.0.1",
     "@openzeppelin/contracts": "^3.4.0",
